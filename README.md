@@ -1,5 +1,7 @@
 # Visao-computacional
 
+Projeto base para este: https://github.com/schumanzhang/object_detection_real_time#detecting-the-presence-of-people-in-a-room-in-a-live-video-feed
+
 ## Versões das bibliotecas
 Caso necessário, instalar as versões das bibliotecas de acordo com o arquivo requirements.txt.
 
