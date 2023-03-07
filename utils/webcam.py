@@ -8,22 +8,22 @@ from matplotlib import colors
 
 class FPS:
     def __init__(self):
-        # start time, end time, total number of frames
+        # hora de início, hora de término, número total de frames
         self._start = None
         self._end = None
         self._numFrames = 0
 
     def start(self):
-        # start the timer
+        # inicia o cronômetro
         self._start = datetime.datetime.now()
         return self
     
     def stop(self):
-        # stop the timer
+        # para o cronômetro
         self._end = datetime.datetime.now()
 
     def update(self):
-        # increment the number of frames analysed during the start and end interval
+        # incrementa o número de frames analisados ​​durante o intervalo inicial e final
         self._numFrames += 1
 
     def elapsed(self):
@@ -31,7 +31,7 @@ class FPS:
         return (self._end - self._start).total_seconds()
 
     def fps(self):
-        # approximate frames per second
+       # quadros aproximados por segundo
         return self._numFrames / self.elapsed()
 
     def get_numFrames(self):
@@ -40,45 +40,43 @@ class FPS:
 
 class WebcamVideoStream:
     def __init__(self, src, width, height):
-        # init the video camera stream
-        # read the first frame from the stream
+        # inicia o fluxo da câmera de vídeo
+        # lê o primeiro quadro do stream
 
-        # VideoCapture provides API for capturing video from cameras, reading video files and image sequences
-        # try passing in different sources
-        self.stream = cv2.VideoCapture(src)
+        self.stream = cv2.VideoCapture(src) # VideoCapture fornece API para capturar vídeo de câmeras, ler arquivos de vídeo e sequências de imagens
         self.stream.set(cv2.CAP_PROP_FRAME_WIDTH, width)
         self.stream.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
-        # read the first frame
-        (self.grabbed, self.frame) = self.stream.read()
+        # lê o primeiro quadro
+        (self.grabbed, self.frame) = self.stream.read() # 'self.grabbed' recebe 'self.stream' e 'self.frame' recebe as dimensões width e height de 'self.stream' do frame lido mais recentemente
         self.stopped = False
 
 
     def start(self):
-        # start the thread to read frames from video stream
-        Thread(target=self.update, args=()).start()
+        # inicia o thread para ler os quadros do fluxo de vídeo
+        Thread(target=self.update, args=()).start() #inicia-se o método 'update', atribuindo-o à variável 'target', e sem usar argumentos
         return self
 
 
     def update(self):
-        # keep looping until thread is stopped
+        # mantenha o loop até que o thread seja interrompido
         while True:
-            if self.stopped:
-                return
+            if self.stopped: #se self.stopped == True
+                return # não retorna nada
 
-            # keep reading the next frame from the video stream
-            (self.grabbed, self.frame) = self.stream.read()
+            # continue lendo o próximo quadro do stream de vídeo
+            (self.grabbed, self.frame) = self.stream.read() # 'self.grabbed' recebe 'self.stream' e 'self.frame' recebe as dimensões width e height de 'self.stream' do frame lido mais recentemente
 
 
     def read(self):
-        # get the most recently read frame
+        # obtém o frame lido mais recentemente
         return self.frame
 
 
     def stop(self):
-        # stopping the thread
+        # parando a thread
         self.stopped = True
-        self.stream.release()
+        self.stream.release() # interromper o thread (dando Crtl+C, por exemplo)
 
 
 def standard_colors():
@@ -111,8 +109,8 @@ def standard_colors():
 
 def color_name_to_rgb():
     colors_rgb = []
-    for key, value in colors.cnames.items():
-        colors_rgb.append((key, struct.unpack('BBB', bytes.fromhex(value.replace('#', '')))))
+    for key, value in colors.cnames.items(): # para os títulos e valores que contém uma visualização das cores em hexadecimal
+        colors_rgb.append((key, struct.unpack('BBB', bytes.fromhex(value.replace('#', ''))))) # adiciona à lista 'colors_rgb' as tuplas com o título e a conversão para hexadecimal (alterando os caracteres '#' para nada)
     return dict(colors_rgb)
 
 
@@ -126,69 +124,69 @@ def draw_boxes_and_labels(
         max_boxes_to_draw=20,
         min_score_thresh=.5,
         agnostic_mode=False):
-    """Returns boxes coordinates, class names and colors
-    Args:
-      boxes: a numpy array of shape [N, 4]
-      classes: a numpy array of shape [N]
-      scores: a numpy array of shape [N] or None.  If scores=None, then
-        this function assumes that the boxes to be plotted are groundtruth
-        boxes and plot all boxes as black with no classes or scores.
-      category_index: a dict containing category dictionaries (each holding
-        category index `id` and category name `name`) keyed by category indices.
-      instance_masks: a numpy array of shape [N, image_height, image_width], can
-        be None
-      keypoints: a numpy array of shape [N, num_keypoints, 2], can
-        be None
-      max_boxes_to_draw: maximum number of boxes to visualize.  If None, draw
-        all boxes.
-      min_score_thresh: minimum score threshold for a box to be visualized
-      agnostic_mode: boolean (default: False) controlling whether to evaluate in
-        class-agnostic mode or not.  This mode will display scores but ignore
+    """Retorna as coordenadas das caixas, nomes de classe e cores
+    Argumentos:
+      boxes: uma matriz numpy de forma [N, 4]
+      classes: uma matriz numpy de forma [N]
+      scores: uma matriz numpy de forma [N] ou None. Se pontuações=None, então
+        esta função assume que as caixas a serem plotadas são groundtruth
+        caixas e plotar todas as caixas como pretas sem classes ou pontuações.
+      category_index: um dict contendo dicionários de categoria (cada
+        índice de categoria `id` e nome de categoria `name`) codificados por índices de categoria.
+      instance_masks: uma matriz numpy de forma [N, image_height, image_width], pode
+        ser None.
+      keypoints: uma matriz numpy de forma [N, num_keypoints, 2], pode
+        ser nenhum
+      max_boxes_to_draw: número máximo de caixas a serem visualizadas. Se nenhum, desenhe
+        todas as caixas.
+      min_score_thresh: limite mínimo de pontuação para uma caixa ser visualizada
+      agnostic_mode: booleano (padrão: Falso) controlando se deve ser avaliado em
+        modo class-agnóstico ou não. Este modo exibirá pontuações, mas ignorará
         classes.
     """
-    # Create a display string (and color) for every box location, group any boxes
-    # that correspond to the same location.
-    box_to_display_str_map = collections.defaultdict(list)
-    box_to_color_map = collections.defaultdict(str)
-    box_to_instance_masks_map = {}
-    box_to_keypoints_map = collections.defaultdict(list)
-    if not max_boxes_to_draw:
-        max_boxes_to_draw = boxes.shape[0]
+    # Crie uma string de exibição (e cor) para cada localização de caixa, agrupe todas as caixas
+    # que correspondem ao mesmo local.
+    box_to_display_str_map = collections.defaultdict(list) #faz o objeto 'list' virar tipo um dicionário e o atribui a uma variável
+    box_to_color_map = collections.defaultdict(str) #faz o objeto 'str' virar tipo um dicionário e o atribui a uma variável
+    box_to_instance_masks_map = {} #cria um dicionário vazio
+    box_to_keypoints_map = collections.defaultdict(list) #faz o objeto 'list' virar tipo um dicionário e o atribui a uma variável
+    if not max_boxes_to_draw: # se não tiver 'max_boxes_to_draw'
+        max_boxes_to_draw = boxes.shape[0] # atribui 0 dimensões para 'boxes'
     for i in range(min(max_boxes_to_draw, boxes.shape[0])):
-        if scores is None or scores[i] > min_score_thresh:
-            box = tuple(boxes[i].tolist())
-            if instance_masks is not None:
-                box_to_instance_masks_map[box] = instance_masks[i]
+        if scores is None or scores[i] > min_score_thresh: # se 'scores' = None ou 'scores' > .5
+            box = tuple(boxes[i].tolist()) # o array 'boxes' vira uma tupla com os mesmos elementos
+            if instance_masks is not None: # se 'instance_masks' não for None
+                box_to_instance_masks_map[box] = instance_masks[i] # a variável dicionário em que cada elemento da tupla 'box' significa cada elemento de 'instance_masks'
             if keypoints is not None:
-                box_to_keypoints_map[box].extend(keypoints[i])
+                box_to_keypoints_map[box].extend(keypoints[i]) # extende a lista 'box_to_keypoints_map' da tupla 'box' aos elementos de 'keypoint'
             if scores is None:
-                box_to_color_map[box] = 'black'
+                box_to_color_map[box] = 'black' # atribui a cor preta à tupla 'box'
             else:
-                if not agnostic_mode:
-                    if classes[i] in category_index.keys():
-                        class_name = category_index[classes[i]]['name']
+                if not agnostic_mode: # se 'agnostic_mode' = True
+                    if classes[i] in category_index.keys(): # se os elementos de 'classes' forem os títulos de 'category_index'
+                        class_name = category_index[classes[i]]['name'] # 'class_name' passa a ser os nomes elementos de 'category_index' respectivo a cada coluna de 'classes'
                     else:
-                        class_name = 'N/A'
-                    display_str = '{}: {}%'.format(
+                        class_name = 'N/A' # se não houver elementos em 'class_name'
+                    display_str = '{}: {}%'.format( # substituirá a primeira chave por 'class_name' e a segunda por 'int(100 * scores[i])'
                         class_name,
                         int(100 * scores[i]))
+                else: # se 'agnostic_mode' = False
+                    display_str = 'score: {}%'.format(int(100 * scores[i])) # substituirá a chave por 'int(100 * scores[i])'
+                box_to_display_str_map[box].append(display_str) # o elemento 'box' em 'box_to_display_str_map' ganha o dicionário 'display_str'
+                if agnostic_mode: # se 'agnostic_mode' == True
+                    box_to_color_map[box] = 'DarkOrange' # ao elemento 'box' de 'box_to_color_map' é atribuído a cor DarkOrange
                 else:
-                    display_str = 'score: {}%'.format(int(100 * scores[i]))
-                box_to_display_str_map[box].append(display_str)
-                if agnostic_mode:
-                    box_to_color_map[box] = 'DarkOrange'
-                else:
-                    box_to_color_map[box] = standard_colors()[
-                        classes[i] % len(standard_colors())]
+                    box_to_color_map[box] = standard_colors()[ #pega a função 'standard_colors' que é uma lista de nomes de cores
+                        classes[i] % len(standard_colors())] # pega o elemento dessa lista que é o resto da divisão dos elementos de 'classes' pelo tamanho total da lista 'standard_colors'
 
-    # Store all the coordinates of the boxes, class names and colors
-    color_rgb = color_name_to_rgb()
+    # Cópia da matriz, convertida para um tipo especificado.
+    color_rgb = color_name_to_rgb() # atribui à variável a função que pega tem listas de tuplas de títulos e os valores das cores em hexadecimal
     rect_points = []
     class_names = []
     class_colors = []
-    for box, color in six.iteritems(box_to_color_map):
-        ymin, xmin, ymax, xmax = box
-        rect_points.append(dict(ymin=ymin, xmin=xmin, ymax=ymax, xmax=xmax))
-        class_names.append(box_to_display_str_map[box])
-        class_colors.append(color_rgb[color.lower()])
+    for box, color in six.iteritems(box_to_color_map): # para as variáveis 'box' e 'color' que contém pares de tuplas (chave, valor) de 'box_to_color_map'
+        ymin, xmin, ymax, xmax = box # atribui cada um dos 4 valores de valores de 'box' a cada uma das variáveis, respectivamente
+        rect_points.append(dict(ymin=ymin, xmin=xmin, ymax=ymax, xmax=xmax)) # adciona o dicionário à lista vazia 'rect_points'
+        class_names.append(box_to_display_str_map[box]) # adiciona o elemento 'box' de 'box_to_display_str_map' à lista vazia 'class_names'
+        class_colors.append(color_rgb[color.lower()]) # adiciona o elementos com o nome das cores todas em minúsculo à lista vazia 'class_colors'
     return rect_points, class_names, class_colors
