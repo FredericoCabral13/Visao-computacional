@@ -3,8 +3,8 @@ import csv
 import cv2
 import os
 
-# tracks and tallys what's present at any particular time on screen
-# puts stats in a csv file in another directory
+# rastreia e registra o que está presente em qualquer momento específico na tela
+# coloca estatísticas em um arquivo csv em outro diretório
 # [['person: 98%'], ['book: 55%'], ['book: 50%']]
 class ObjectTracker(object):
     def __init__(self, path, file_name):
@@ -22,7 +22,7 @@ class ObjectTracker(object):
             count_item = item[0].split(':')[0]
             frame_counts[count_item] += 1
 
-        # sort this dictionary?
+        # classificar este dicionário?
         self.class_counts = frame_counts
 
     def update_person_status(self, class_names):
