@@ -8,8 +8,8 @@ Explicação básica do código principal: https://medium.com/@schuman.zhang/det
 Caso necessário, instalar as versões das bibliotecas de acordo com o arquivo **requirements.txt**.
 
 ## Executando o código localmente
-1º - Baixe a pasta **object_detection** do projeto baseado em *https://github.com/datitran/object_detector_app* e copie o conteúdo dessa pasta para a pasta **detection** deste projeto (não há necessidade de substituir arquivos repetidos).
+1º - Baixe o arquivo zip clicando em "code" e extraia a pasta em um diretório de sua preferência.
 
-2º - baixe o arquivo zip clicando em "code" e extraia a pasta em um diretório de sua preferência.
+2º - Baixe a pasta **object_detection** do projeto baseado em *https://github.com/datitran/object_detector_app* e copie o conteúdo dessa pasta para a pasta **detection** deste projeto (não há necessidade de substituir arquivos repetidos).
 
 3º- Para executar o aplicativo via terminal, entre no diretório onde estão esses arquivos e execute o comando: ***python3 objection_detection_app.py***. Ou, então, abra a pasta no VS Code e execute o código **objection_detection_app.py**.
